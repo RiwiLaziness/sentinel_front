@@ -1,4 +1,5 @@
 import React from "react";
+import Sidebar from "@/components/commons/Sidebar";
 import { useTheme } from "@/utils/store/themeContext";
 import {
   ShieldCheck,
@@ -25,6 +26,7 @@ import {
   useRecentScans,
   useTopRiskProjects,
 } from "@/utils/hooks/dashboard/useDashboard";
+import { i } from "framer-motion/client";
 
 /* ========================================================= */
 /* ====================== DASHBOARD ======================== */
@@ -41,80 +43,7 @@ export default function Dashboard() {
   return (
     <div className="app" style={{ background: theme.colors.background }}>
       {/* ================= SIDEBAR ================= */}
-      <aside
-        className="sidebar"
-        style={{
-          background: theme.colors.surface,
-          borderRight: `1px solid ${theme.colors.border}`,
-        }}
-      >
-        {/* Logo */}
-        <div
-          className="logo"
-          style={{
-            color: theme.colors.text.primary,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            fontWeight: 600,
-          }}
-        >
-          <ShieldCheck size={20} />
-          Sentinel
-        </div>
-
-        {/* Navigation */}
-        <nav>
-          {[
-            { label: "Dashboard", icon: LayoutDashboard },
-            { label: "Scans", icon: Radar },
-            { label: "Projects", icon: Folder },
-            { label: "Findings", icon: Bug },
-            { label: "Notifications", icon: Bell },
-            { label: "Settings", icon: Settings },
-          ].map(({ label, icon: Icon }, i) => (
-            <a
-              key={label}
-              className={i === 0 ? "active" : ""}
-              style={{
-                background: i === 0 ? theme.colors.primary : "transparent",
-                color:
-                  i === 0
-                    ? theme.colors.onPrimary
-                    : theme.colors.text.secondary,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                fontWeight: 500,
-              }}
-            >
-              <Icon size={18} />
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        {/* User */}
-        <div className="user">
-          <div
-            className="avatar"
-            style={{
-              background: theme.colors.primary,
-              color: theme.colors.onPrimary,
-            }}
-          >
-            AC
-          </div>
-          <div>
-            <strong style={{ color: theme.colors.text.primary }}>
-              Alex Chen
-            </strong>
-            <span style={{ color: theme.colors.text.secondary }}>
-              SecOps Lead
-            </span>
-          </div>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ================= MAIN ================= */}
       <main className="main">

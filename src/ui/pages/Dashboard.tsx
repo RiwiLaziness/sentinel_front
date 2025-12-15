@@ -25,7 +25,7 @@ import {
   useVulnerabilityTrends,
   useRecentScans,
   useTopRiskProjects,
-} from "@/utils/hooks/dashboard/useDashboard";
+} from "@hooks/useDashboard";
 import { i } from "framer-motion/client";
 
 /* ========================================================= */

@@ -1,7 +1,7 @@
 import { Outlet, RouterProvider } from 'react-router-dom';
 import { router } from './utils/router';
 import { ThemeProvider } from './utils/store/themeContext';
-import { useThemeStyles } from './utils/hooks/useThemeStyles';
+import { useThemeStyles } from '@hooks/useThemeStyles';
 import './App.css';
 import { useTheme} from "./utils/store/themeContext";
 

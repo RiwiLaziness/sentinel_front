@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useTheme } from '../store/themeContext';
+import { useTheme } from '@utils/store/themeContext';
 
 export const useThemeStyles = () => {
   const { theme } = useTheme();

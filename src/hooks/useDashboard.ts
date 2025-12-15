@@ -17,10 +17,21 @@ type ApiState<T> = {
 ====================================================== */
 
 export interface DashboardSummary {
-  activeScans: number;
-  criticalFindings: number;
+  exposedPorts: number;
+  criticalFindingsOpen: number;
   qualityGatePassRate: number;
   projectsMonitored: number;
+}
+
+export interface DashboardData {
+  tenants: any[];
+  projects: any[];
+  recentScans: any[];
+  stats: {
+    totalTenants: number;
+    totalProjects: number;
+    totalScans: number;
+  };
 }
 
 export function useDashboardSummary(): ApiState<DashboardSummary | null> {
@@ -34,10 +45,25 @@ export function useDashboardSummary(): ApiState<DashboardSummary | null> {
     const fetchSummary = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API}/api/dashboard/summary`);
+        const token = localStorage.getItem("accessToken");
+        const res = await fetch(`${API}/api/bff/dashboard`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (!res.ok) throw new Error("Failed to load dashboard summary");
-        const json = await res.json();
-        if (mounted) setData(json);
+        const json: DashboardData = await res.json();
+
+        // Transform BFF response to dashboard summary format
+        if (mounted) {
+          setData({
+            exposedPorts: 0, // TODO: Add to BFF response
+            criticalFindingsOpen: 0, // TODO: Add to BFF response from scans
+            qualityGatePassRate: 85, // TODO: Calculate from scans
+            projectsMonitored: json.stats?.totalProjects ?? json.projects?.length ?? 0,
+          });
+        }
       } catch (e: any) {
         if (mounted) setError(e.message);
       } finally {
@@ -80,10 +106,25 @@ export function useActiveScans(): ApiState<ActiveScan[]> {
     const fetchActiveScans = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API}/api/scans/active`);
+        const token = localStorage.getItem("accessToken");
+        const res = await fetch(`${API}/api/bff/scans?status=RUNNING`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (!res.ok) throw new Error("Failed to load active scans");
         const json = await res.json();
-        if (mounted) setData(json);
+        // Transform to expected format
+        const scans = (json.content ?? json ?? []).map((scan: any) => ({
+          scanId: scan.scanId ?? scan.id,
+          projectName: scan.projectName ?? scan.project ?? "Unknown",
+          scanType: scan.type ?? scan.scanType ?? "SAST",
+          status: scan.status ?? "Running",
+          statusMessage: scan.message ?? "Scanning...",
+          elapsedTime: scan.elapsedTime ?? "--:--",
+        }));
+        if (mounted) setData(scans);
       } catch (e: any) {
         if (mounted) setError(e.message);
       } finally {
@@ -175,12 +216,28 @@ export function useRecentScans(limit = 5): ApiState<RecentScan[]> {
     const fetchRecentScans = async () => {
       try {
         setLoading(true);
+        const token = localStorage.getItem("accessToken");
         const res = await fetch(
-          `${API}/api/scans?limit=${limit}&sort=completedAt`
+          `${API}/api/bff/scans?size=${limit}&sort=createdAt,desc`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
         if (!res.ok) throw new Error("Failed to load recent scans");
         const json = await res.json();
-        if (mounted) setData(json.items ?? json);
+        // Transform to expected format
+        const scans = (json.content ?? json.items ?? json ?? []).map((scan: any) => ({
+          scanId: scan.scanId ?? scan.id,
+          projectName: scan.projectName ?? scan.project ?? "Unknown",
+          scanType: scan.type ?? scan.scanType ?? "SAST",
+          status: scan.status ?? "COMPLETED",
+          qualityGatePassed: scan.qualityGatePassed ?? scan.qualityGate === "PASS",
+          completedAt: scan.completedAt ?? scan.createdAt,
+        }));
+        if (mounted) setData(scans);
       } catch (e: any) {
         if (mounted) setError(e.message);
       } finally {

@@ -10,6 +10,7 @@ import {
   Bell,
   Settings,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 
 type SidebarProps = {
@@ -26,8 +27,9 @@ export default function Sidebar({ activeItem = "dashboard" }: SidebarProps) {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { id: "scans", label: "Scans", icon: Radar, path: "/scans" },
-    { id: "projects", label: "Projects", icon: Folder, path: "/projects" },
+    { id: "workspaces", label: "Workspaces", icon: Folder, path: "/workspaces" },
     { id: "findings", label: "Findings", icon: Bug, path: "/findings" },
+    { id: "billing", label: "Billing", icon: CreditCard, path: "/billing" },
     { id: "settings", label: "Settings", icon: Settings, path: "/settings" },
   ];
 

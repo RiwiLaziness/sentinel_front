@@ -1,0 +1,111 @@
+import { useEffect, useState } from "react";
+
+const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+type ApiState<T> = {
+    data: T;
+    loading: boolean;
+    error: string | null;
+    refetch: () => void;
+};
+
+/* ======================================================
+   WORKSPACE (TENANT) TYPES
+====================================================== */
+
+export interface Workspace {
+    id: string;
+    name: string;
+    description: string;
+    projectCount: number;
+    memberCount: number;
+    lastActivity: string;
+    createdAt: string;
+    plan: string;
+}
+
+/* ======================================================
+   WORKSPACES HOOK
+====================================================== */
+
+export function useWorkspaces(): ApiState<Workspace[]> {
+    const [data, setData] = useState<Workspace[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchWorkspaces = async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`${API}/api/bff/dashboard`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!res.ok) throw new Error("Failed to load workspaces");
+            const json = await res.json();
+
+            // Transform tenants to workspaces format
+            const workspaces = (json.tenants ?? []).map((tenant: any) => ({
+                id: tenant.id ?? tenant.tenantId,
+                name: tenant.name ?? tenant.companyName ?? "Workspace",
+                description: tenant.description ?? `${tenant.plan ?? "Free"} Plan`,
+                projectCount: json.projects?.filter((p: any) => p.tenantId === tenant.id)?.length ?? 0,
+                memberCount: tenant.memberCount ?? 1,
+                lastActivity: tenant.updatedAt ?? tenant.createdAt ?? "Recently",
+                createdAt: tenant.createdAt,
+                plan: tenant.plan ?? "FREE",
+            }));
+
+            setData(workspaces);
+        } catch (e: any) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchWorkspaces();
+    }, []);
+
+    return { data, loading, error, refetch: fetchWorkspaces };
+}
+
+/* ======================================================
+   CREATE WORKSPACE
+====================================================== */
+
+export function useCreateWorkspace() {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const createWorkspace = async (data: { name: string; description?: string }) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const token = localStorage.getItem("accessToken");
+            const res = await fetch(`${API}/api/tenants`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    companyName: data.name,
+                    description: data.description,
+                }),
+            });
+            if (!res.ok) throw new Error("Failed to create workspace");
+            return await res.json();
+        } catch (e: any) {
+            setError(e.message);
+            throw e;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return { createWorkspace, loading, error };
+}

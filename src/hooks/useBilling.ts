@@ -56,7 +56,27 @@ export function usePlans(): ApiState<Plan[]> {
             const res = await fetch(`${API}/api/plans`);
             if (!res.ok) throw new Error("Failed to load plans");
             const json = await res.json();
-            setData(json.content ?? json ?? []);
+            const rawData = Array.isArray(json) ? json : (json.content || []);
+
+            // Map backend DTO to Frontend Interface
+            const mappedPlans = rawData.map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                price: p.priceUsd ?? 0,
+                period: "month", // Default to monthly
+                features: [
+                    p.maxProjects === -1 ? "Unlimited Projects" : `${p.maxProjects} Projects`,
+                    p.maxUsers === -1 ? "Unlimited Users" : `${p.maxUsers} Users`,
+                    p.maxDomains > 0 ? `${p.maxDomains} Domains` : null,
+                    p.maxRepos > 0 ? `${p.maxRepos} Repositories` : null,
+                    p.includesBlockchain ? "Blockchain Security" : null,
+                    p.recommended ? "Recommended Choice" : null
+                ].filter(Boolean),
+                maxProjects: p.maxProjects,
+                maxScansPerMonth: -1 // specific field not in generic plan DTO, defaulting
+            }));
+
+            setData(mappedPlans);
         } catch (e: any) {
             setError(e.message);
             // Fallback to mock data if API fails
@@ -160,7 +180,8 @@ export function usePaymentHistory(): ApiState<Payment[]> {
         try {
             setLoading(true);
             const token = localStorage.getItem("accessToken");
-            const res = await fetch(`${API}/api/payments-history`, {
+            // Fixed URL: /api/payments-history/me
+            const res = await fetch(`${API}/api/payments-history/me`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
@@ -168,7 +189,8 @@ export function usePaymentHistory(): ApiState<Payment[]> {
             });
             if (!res.ok) throw new Error("Failed to load payment history");
             const json = await res.json();
-            setData(json.content ?? json ?? []);
+            // Ensure array safety
+            setData(Array.isArray(json) ? json : (json.content || []));
         } catch (e: any) {
             setError(e.message);
             // Fallback mock

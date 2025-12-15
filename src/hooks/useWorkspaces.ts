@@ -93,8 +93,8 @@ export function useCreateWorkspace() {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    companyName: data.name,
-                    description: data.description,
+                    name: data.name,
+                    type: "PERSONAL", // Defaulting to PERSONAL for simplified flow
                 }),
             });
             if (!res.ok) throw new Error("Failed to create workspace");

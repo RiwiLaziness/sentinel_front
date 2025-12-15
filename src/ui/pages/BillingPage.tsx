@@ -79,7 +79,7 @@ export default function BillingPage() {
                             {/* Plans Grid */}
                             <h3 style={{ color: theme.colors.text.primary, marginBottom: 16 }}>Available Plans</h3>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
-                                {plans.map((plan) => {
+                                {(plans || []).map((plan) => {
                                     const isCurrent = subscription?.planId === plan.id;
                                     return (
                                         <div
@@ -121,7 +121,7 @@ export default function BillingPage() {
                                             </div>
 
                                             <ul style={{ listStyle: "none", padding: 0, marginBottom: 24 }}>
-                                                {plan.features.map((feature, idx) => (
+                                                {(plan.features || []).map((feature, idx) => (
                                                     <li
                                                         key={idx}
                                                         style={{
@@ -192,7 +192,7 @@ export default function BillingPage() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {payments.map((payment) => (
+                                        {(payments || []).map((payment) => (
                                             <tr key={payment.id}>
                                                 <td style={{ padding: "12px 8px", color: theme.colors.text.primary }}>
                                                     {new Date(payment.createdAt).toLocaleDateString()}

@@ -1,21 +1,30 @@
-// src/ui/components/Navbar.tsx
+import { useEffect } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { useTheme } from "../../utils/store/themeContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import { Sun, Moon, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import { Button } from "./Button";
 import { IconButton } from "./toggleButton";
 import Logo from "@/assets/icons/sentinel-logo.svg?react";
-import { Link } from "react-router-dom";
 
 export const Navbar = () => {
-  const { theme, toggleTheme, mode } = useTheme();
+  const { theme, mode, setTheme } = useTheme();
+
   const { i18n, t } = useTranslation();
+  const location = useLocation();
+
+  /* 🔥 Forzar tema según la ruta */
+  useEffect(() => {
+    if (location.pathname.startsWith("/auth")) {
+      if (mode !== "light") setTheme("light");
+    } else {
+      if (mode !== "dark") setTheme("dark");
+    }
+  }, [location.pathname, mode, setTheme]);
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
   };
-
   return (
     <nav
       style={{
@@ -39,8 +48,8 @@ export const Navbar = () => {
       </div>
 
       <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-        <a
-          href="#"
+        <Link
+          to="/"
           style={{
             color: theme.colors.text.secondary,
             textDecoration: "none",
@@ -48,9 +57,9 @@ export const Navbar = () => {
           }}
         >
           {t("nav.home")}
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          to="/"
           style={{
             color: theme.colors.text.secondary,
             textDecoration: "none",
@@ -58,7 +67,7 @@ export const Navbar = () => {
           }}
         >
           {t("nav.services")}
-        </a>
+        </Link>
         <a
           href="#"
           style={{

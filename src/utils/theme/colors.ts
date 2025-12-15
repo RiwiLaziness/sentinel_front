@@ -5,6 +5,7 @@ export const palette = {
       primary: '#FF1B6D',
       primaryLight: '#FF4D8D',
       primaryDark: '#a50540ff',
+       onPrimary: '#FFFFFF',
       
       // Colores secundarios
       secondary: '#1A1A1A',
@@ -15,6 +16,7 @@ export const palette = {
       background: '#000000ff',
       surface: '#1A1A1A',
       surfaceLight: '#2D2D2D',
+      onSurface: '#FFFFFF',
       
       text: {
         primary: '#FFFFFF',
@@ -27,6 +29,7 @@ export const palette = {
       warning: '#F59E0B',
       danger: '#EF4444',
       info: '#3B82F6',
+      onDanger: '#FFFFFF',
       
       // Bordes
       border: '#333333',

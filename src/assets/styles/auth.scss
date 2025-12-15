@@ -135,7 +135,6 @@ form{ width: 100%; }
     left: -250%;
     width: 300%;
     height: 100%;
-    border-radius: 150px;
     z-index: 2;
     transition: 1.8s ease-in-out;
     
@@ -143,10 +142,10 @@ form{ width: 100%; }
         url('../images/bg/auth-detail.svg'),        
         url('../images/bg/auth-bg.png');
     background-size:
-        auto 115%,      
+        auto 103%,      
         cover;
     background-position: 
-        calc(100% + 60px) center, 
+        calc(100% + 3.5vh) center, 
         center;
     background-attachment:
         local,
@@ -154,7 +153,8 @@ form{ width: 100%; }
     background-repeat: no-repeat;
 }
 
-        .auth-container.active .toggle-box::before{ left: 50%; }
+        .auth-container.active .toggle-box::before{ left: 50%; 
+    border-radius: 150px; }
 
 .toggle-panel{
     position: absolute;

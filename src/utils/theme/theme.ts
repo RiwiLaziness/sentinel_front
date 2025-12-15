@@ -58,7 +58,6 @@ export const lightTheme: ThemeConfig = {
       secondary: '#4A4A4A',
       tertiary: '#808080',
     },
-
     border: '#E0E0E0',
     borderLight: '#F0F0F0',
     borderDark: '#D0D0D0',

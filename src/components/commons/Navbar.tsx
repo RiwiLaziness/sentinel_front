@@ -48,8 +48,8 @@ export const Navbar = () => {
       </div>
 
       <div style={{ display: "flex", gap: "30px", alignItems: "center" }}>
-        <a
-          href="#"
+        <Link
+          to="/"
           style={{
             color: theme.colors.text.secondary,
             textDecoration: "none",
@@ -57,9 +57,9 @@ export const Navbar = () => {
           }}
         >
           {t("nav.home")}
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          to="/"
           style={{
             color: theme.colors.text.secondary,
             textDecoration: "none",
@@ -67,7 +67,7 @@ export const Navbar = () => {
           }}
         >
           {t("nav.services")}
-        </a>
+        </Link>
         <a
           href="#"
           style={{
